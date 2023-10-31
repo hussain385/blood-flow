@@ -4,41 +4,41 @@ export const points: {title: string, description?: () => React.ReactNode, top: n
     {
         title: 'Right atrium',
         description: () => <p className={'text-sm py-3'}>deoxygenated blood returns <span className={'font-bold italic'}>from the body</span></p>,
-        top: 340 + 150,
-        left: -60 + 100,
+        top: 280 + 0,
+        left: -50 + 50,
         flip: true
     },
     {
         title: 'Right ventricle',
-        top: 710 + 150,
-        left: 210 + 100,
+        top: 560 + 0,
+        left: 200 + 50,
         flip: true
     },
     {
         title: 'Pulmonary arteries',
         description: () => <p className={'text-sm py-3'}>deoxygenated blood goes <span className={'font-bold italic'}>to the lungs</span></p>,
-        top: 310 + 150,
-        left: 500 + 100,
+        top: 255 + 0,
+        left: 470 + 50,
         flip: false
     },
     {
         title: 'Left atrium',
         description: () => <p className={'text-sm py-3'}>oxygenated blood returns <span className={'font-bold italic'}>from the lungs</span></p>,
-        top: 430 + 150,
-        left: 510 + 100,
+        top: 370 + 0,
+        left: 430 + 50,
         flip: false
     },
     {
         title: 'Left ventricle',
-        top: 700 + 150,
-        left: 610 + 100,
+        top: 560 + 0,
+        left: 500 + 50,
         flip: false
     },
     {
         title: 'Aorta',
         description: () => <p className={'text-sm py-3'}>oxygenated blood is <span className={'font-bold italic'}>pumped to the body</span></p>,
-        top: 210 + 150,
-        left: 120 + 100,
+        top: 170 + 0,
+        left: 65 + 50,
         flip: true
     }
 ]

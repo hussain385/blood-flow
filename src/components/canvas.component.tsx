@@ -142,8 +142,8 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
     useLayoutEffect(() => {
         if (context) {
             const image = new window.Image();
-            const squareWidth = 550;
-            const squareHeight = 750
+            const squareWidth = 350;
+            const squareHeight = 550
             image.src = "https://upload.wikimedia.org/wikipedia/commons/8/86/Heart_normal.svg"
             context.clearRect(0, 0, canvasWidth, canvasHeight);
             image.onload = () => {

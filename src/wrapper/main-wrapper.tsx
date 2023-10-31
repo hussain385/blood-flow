@@ -8,7 +8,7 @@ import {isUndefined} from "lodash"
 const MainWrapper = ({children, setTitleExpanded, titleExpanded}: {children: React.ReactNode, setTitleExpanded: React.Dispatch<React.SetStateAction<string>>, titleExpanded: string}) => {
     return (
         <div className={'flex h-screen'}>
-            <div className={'flex flex-col w-[21%] mx-3'}>
+            <div className={'flex flex-col w-[21%] px-3 overflow-auto pb-8'}>
                 <h1 className={'text-lg font-bold py-5'}>Blood Flow Through the Heart</h1>
                 <Separator />
                 <p className={'py-5 text-sm'}>
@@ -47,7 +47,7 @@ const MainWrapper = ({children, setTitleExpanded, titleExpanded}: {children: Rea
                     </div>
                 ))}
             </div>
-            <div className={'bg-[#eee] w-[77%] flex flex-col items-center justify-center'}>
+            <div className={'bg-[#eee] w-[79%] flex flex-col items-center justify-center'}>
                 {children}
             </div>
         </div>

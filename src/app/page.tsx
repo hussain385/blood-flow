@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
       <MainWrapper titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded}>
-          <CanvasComponent titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded} canvasHeight={1300} canvasWidth={1100} canvasRef={canvasRef}/>
+          <CanvasComponent titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded} canvasHeight={790} canvasWidth={900} canvasRef={canvasRef}/>
       </MainWrapper>
   )
 }
