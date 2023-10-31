@@ -1,12 +1,15 @@
-import Image from 'next/image'
+"use client"
 import MainWrapper from "@/wrapper/main-wrapper";
+import CanvasComponent from "@/components/canvas.component";
+import {useRef, useState} from "react";
 
 export default function Home() {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [titleExpanded, setTitleExpanded] = useState<string>('');
+
   return (
-      <MainWrapper>
-          <div>
-              hello
-          </div>
+      <MainWrapper titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded}>
+          <CanvasComponent titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded} canvasHeight={1300} canvasWidth={1100} canvasRef={canvasRef}/>
       </MainWrapper>
   )
 }
