@@ -49,7 +49,6 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
     const [scale, setScale] = useState<number>(1);
     const [offset, setOffset] = useState<Point>(ORIGIN);
-    const [mousePos, setMousePos] = useState<Point>(ORIGIN);
     const [viewportTopLeft, setViewportTopLeft] = useState<Point>(ORIGIN);
     const isResetRef = useRef<boolean>(false);
     const lastMousePosRef = useRef<Point>(ORIGIN);
@@ -65,15 +64,13 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
         (context: CanvasRenderingContext2D) => {
             if (context && !isResetRef.current) {
                 // adjust for device pixel density
-                context.canvas.width = canvasWidth * ratio;
-                context.canvas.height = canvasHeight * ratio;
-                context.scale(ratio, ratio);
+                context.canvas.width = canvasWidth;
+                context.canvas.height = canvasHeight;
                 setScale(1);
 
                 // reset state and refs
                 setContext(context);
                 setOffset(ORIGIN);
-                setMousePos(ORIGIN);
                 setViewportTopLeft(ORIGIN);
                 lastOffsetRef.current = ORIGIN;
                 lastMousePosRef.current = ORIGIN;
@@ -159,33 +156,6 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
         viewportTopLeft
     ]);
 
-    // add event listener on canvas for mouse position
-    useEffect(() => {
-        const canvasElem = canvasRef.current;
-        if (canvasElem === null) {
-            return;
-        }
-
-        function handleUpdateMouse(event: MouseEvent) {
-            event.preventDefault();
-            if (canvasRef.current) {
-                const viewportMousePos = {x: event.clientX, y: event.clientY};
-                const topLeftCanvasPos = {
-                    x: canvasRef.current.offsetLeft,
-                    y: canvasRef.current.offsetTop
-                };
-                setMousePos(diffPoints(viewportMousePos, topLeftCanvasPos));
-            }
-        }
-
-        canvasElem.addEventListener("mousemove", handleUpdateMouse);
-        canvasElem.addEventListener("wheel", handleUpdateMouse);
-        return () => {
-            canvasElem.removeEventListener("mousemove", handleUpdateMouse);
-            canvasElem.removeEventListener("wheel", handleUpdateMouse);
-        };
-    }, []);
-
     const handleSelectLabel = (selectedLabel: string, top: number, left: number, flip: boolean) => {
         if(selectedLabel === titleExpanded) {
             setTitleExpanded('')
@@ -256,8 +226,8 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
             <canvas
                 onMouseDown={startPan}
                 ref={canvasRef}
-                width={canvasWidth * ratio}
-                height={canvasHeight * ratio}
+                width={canvasWidth}
+                height={canvasHeight}
             >
             </canvas>
             <button>
