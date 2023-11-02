@@ -1,15 +1,25 @@
 "use client"
 import MainWrapper from "@/wrapper/main-wrapper";
-import CanvasComponent from "@/components/canvas.component";
+import HeartCanvasComponent from "@/components/heart-canvas.component";
 import {useRef, useState} from "react";
+import BodyCanvasComponent from "@/components/body-canvas.component";
 
 export default function Home() {
+    const [switchOrgans, setSwitchOrgans] = useState<boolean>(true);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [titleExpanded, setTitleExpanded] = useState<string>('');
+    const [bodyTitleExpanded, setBodyTitleExpanded] = useState<string>('');
+    const [heartTitleExpanded, setHeartTitleExpanded] = useState<string>('');;
 
-  return (
-      <MainWrapper titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded}>
-          <CanvasComponent titleExpanded={titleExpanded} setTitleExpanded={setTitleExpanded} canvasHeight={790} canvasWidth={900} canvasRef={canvasRef}/>
-      </MainWrapper>
-  )
+    return (
+        <MainWrapper switchOrgans={switchOrgans} setSwitchOrgans={setSwitchOrgans} bodyTitleExpanded={bodyTitleExpanded} setBodyTitleExpanded={setBodyTitleExpanded} heartTitleExpanded={heartTitleExpanded} setHeartTitleExpanded={setHeartTitleExpanded}>
+            {switchOrgans ? (
+                <BodyCanvasComponent setSwitchOrgans={setSwitchOrgans} titleExpanded={bodyTitleExpanded} setTitleExpanded={setBodyTitleExpanded}
+                                     canvasHeight={790} canvasWidth={900} canvasRef={canvasRef}/>
+
+            ) : (
+                <HeartCanvasComponent titleExpanded={heartTitleExpanded} setTitleExpanded={setHeartTitleExpanded}
+                                      canvasHeight={790} canvasWidth={900} canvasRef={canvasRef}/>
+            )}
+        </MainWrapper>
+    )
 }

@@ -1,6 +1,6 @@
 "use client"
 import React, {MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
-import {points} from "@/data/heart-points.data";
+import {bodyPoints, points} from "@/data/heart-points.data";
 import {isEmpty} from "lodash";
 
 type CanvasProps = {
@@ -8,7 +8,8 @@ type CanvasProps = {
     canvasHeight: number;
     canvasRef: MutableRefObject<HTMLCanvasElement | null>
     setTitleExpanded: React.Dispatch<React.SetStateAction<string>>,
-    titleExpanded: string
+    titleExpanded: string,
+    setSwitchOrgans: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
 type Point = {
@@ -45,7 +46,7 @@ function scalePoint(p1: Point, scale: number) {
 
 const ZOOM_SENSITIVITY = 500; // bigger for lower zoom per scroll
 
-const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, setTitleExpanded}: CanvasProps) => {
+const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, setTitleExpanded, setSwitchOrgans}: CanvasProps) => {
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
     const [scale, setScale] = useState<number>(1);
     const [offset, setOffset] = useState<Point>(ORIGIN);
@@ -139,9 +140,9 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
     useLayoutEffect(() => {
         if (context) {
             const image = new window.Image();
-            const squareWidth = 350;
+            const squareWidth = 370;
             const squareHeight = 550
-            image.src = "https://upload.wikimedia.org/wikipedia/commons/8/86/Heart_normal.svg"
+            image.src = "https://medlineplus.gov/images/Anatomy_share.jpg"
             context.clearRect(0, 0, canvasWidth, canvasHeight);
             image.onload = () => {
                 context.drawImage(image, canvasWidth / 2 - squareWidth / 2, canvasHeight / 2 - squareHeight / 2, squareWidth, squareHeight);
@@ -166,23 +167,23 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
             setTitleExpanded(selectedLabel)
             if (context) {
                 // for (let x = 0; x <= 280; x++){
-                    const zoom = 1 + 280 / ZOOM_SENSITIVITY;
-                    const viewportTopLeftDelta = {
-                        x: (flip ? left + 360 : left / scale) * (1 - 1 / zoom),
-                        y: (top / scale) * (1 - 1 / zoom)
-                    };
-                    const newViewportTopLeft = addPoints(
-                        viewportTopLeft,
-                        viewportTopLeftDelta
-                    );
+                const zoom = 1 + 280 / ZOOM_SENSITIVITY;
+                const viewportTopLeftDelta = {
+                    x: (flip ? left + 360 : left / scale) * (1 - 1 / zoom),
+                    y: (top / scale) * (1 - 1 / zoom)
+                };
+                const newViewportTopLeft = addPoints(
+                    viewportTopLeft,
+                    viewportTopLeftDelta
+                );
 
-                    context.translate(viewportTopLeft.x, viewportTopLeft.y);
-                    context.scale(zoom, zoom);
-                    context.translate(-newViewportTopLeft.x, -newViewportTopLeft.y);
+                context.translate(viewportTopLeft.x, viewportTopLeft.y);
+                context.scale(zoom, zoom);
+                context.translate(-newViewportTopLeft.x, -newViewportTopLeft.y);
 
-                    setViewportTopLeft(newViewportTopLeft);
-                    setScale(scale * zoom);
-                    isResetRef.current = false;
+                setViewportTopLeft(newViewportTopLeft);
+                setScale(scale * zoom);
+                isResetRef.current = false;
                 // }
             }
         }
@@ -190,7 +191,7 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
 
     return (
         <div className={'relative'}>
-            {points.map((point, key) => {
+            {bodyPoints.map((point, key) => {
                 if(isEmpty(titleExpanded)){
                     return (
                         <div key={key} className={'absolute flex gap-10'} style={{
@@ -217,6 +218,7 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
                             <button onClick={() => handleSelectLabel(point.title, point.top, point.left, point.flip)} className={`bg-[#fffffff2] border ${titleExpanded === point.title ? 'border-blue-600' : 'border-[#adadad]'} p-4 rounded-md hover:border-blue-600 text-start`}>
                                 <p className={'text-sm'}>{point.title}</p>
                                 {point?.description && point?.description()}
+                                {titleExpanded === point.title && point.organSwitch && point.organSwitch(() => setSwitchOrgans(false))}
                             </button>
                             {point.flip && <div className={`w-5 h-5 rounded-full text-white flex items-center justify-center border text-xs ${titleExpanded === point.title ? 'border-blue-600' : 'border-[#fff]'}`}>{key + 1}</div>}
                         </div>
@@ -237,4 +239,4 @@ const CanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, s
     );
 };
 
-export default CanvasComponent;
+export default BodyCanvasComponent;
