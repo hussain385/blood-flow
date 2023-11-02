@@ -47,7 +47,7 @@ export const points: {title: string, description?: () => React.ReactNode, top: n
 export const bodyPoints: {title: string, description?: () => React.ReactNode, top: number, left: number, flip: boolean, organSwitch?: (onClick: () => void) => React.ReactNode}[] = [
     {
         title: 'Shoulders',
-        description: () => <p className={'text-sm py-3'}>deoxygenated blood returns <span className={'font-bold italic'}>from the body</span></p>,
+        description: () => <p className={'text-sm py-3'}>Lorem ipsum dolor sit amet, <span className={'font-bold italic'}>consectetur adipiscing elit</span></p>,
         top: 280 - 10,
         left: -50 + 50,
         flip: true
@@ -60,19 +60,19 @@ export const bodyPoints: {title: string, description?: () => React.ReactNode, to
     },
     {
         title: 'Heart',
-        description: () => <p className={'text-sm py-3'}>oxygenated blood returns <span className={'font-bold italic'}>from the lungs</span></p>,
+        description: () => <p className={'text-sm py-3'}>Velit bibendum nunc <span className={'font-bold italic'}>eget ornare</span></p>,
         top: 370 - 10,
         left: 400 + 50,
         flip: false,
         organSwitch: (onClick: () => void) => (
             <Button onClick={onClick} variant={'ghost'} className={'text-blue-600 px-0'}>
-                More details ->
+                More details -&gt;
             </Button>
         )
     },
     {
         title: 'Mouth',
-        description: () => <p className={'text-sm py-3'}>oxygenated blood is <span className={'font-bold italic'}>pumped to the body</span></p>,
+        description: () => <p className={'text-sm py-3'}>Praesent iaculis ut libero eget <span className={'font-bold italic'}>Ut in vulputate ex</span></p>,
         top: 170 - 10,
         left: 65 + 50,
         flip: true
