@@ -21,11 +21,11 @@ const MainWrapper = ({children, switchOrgans, setSwitchOrgans, bodyTitleExpanded
         <div className={'flex h-screen'}>
             <div className={'flex flex-col w-[24%] px-3 overflow-auto pb-8'}>
                 {switchOrgans ? (
-                    <h1 className={'text-lg font-bold py-5'}>Blood Flow Through the Heart</h1>
+                    <h1 className={'text-lg font-bold py-5'}>Blood Flow Through the Body</h1>
                 ) : (
                     <button className={'flex gap-3 my-5 items-center'} onClick={() => setSwitchOrgans(!switchOrgans)}>
                         <AiOutlineLeft />
-                        <h1 className={'text-lg font-bold'}>Blood Flow Through the Body</h1>
+                        <h1 className={'text-lg font-bold'}>Blood Flow Through the Heart</h1>
                     </button>
                 )}
                 <Separator />
