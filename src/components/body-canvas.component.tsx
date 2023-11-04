@@ -49,11 +49,17 @@ const ZOOM_SENSITIVITY = 500; // bigger for lower zoom per scroll
 const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpanded, setTitleExpanded, setSwitchOrgans}: CanvasProps) => {
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
     const [scale, setScale] = useState<number>(1);
+    const [zoomIn, setZoomIn] = useState<number>(1);
+    const [top1, setTop1] = useState<number>(1);
+    const [left1, setLeft1] = useState<number>(1);
+    const [selectedLabel1, setSelectedLabel1] = useState<string>('');
+    const [flip1, setFlip1] = useState<boolean>(true);
     const [offset, setOffset] = useState<Point>(ORIGIN);
     const [viewportTopLeft, setViewportTopLeft] = useState<Point>(ORIGIN);
     const isResetRef = useRef<boolean>(false);
     const lastMousePosRef = useRef<Point>(ORIGIN);
     const lastOffsetRef = useRef<Point>(ORIGIN);
+    const zooming = useRef(false)
 
     // update last offset
     useEffect(() => {
@@ -90,7 +96,7 @@ const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpande
                 const lastMousePos = lastMousePosRef.current;
                 const currentMousePos = {x: event.pageX, y: event.pageY}; // use document so can pan off element
                 lastMousePosRef.current = currentMousePos;
-
+                zooming.current = false
                 const mouseDiff = diffPoints(currentMousePos, lastMousePos);
                 setOffset((prevOffset) => addPoints(prevOffset, mouseDiff));
             }
@@ -131,6 +137,9 @@ const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpande
                 diffPoints(offset, lastOffsetRef.current),
                 scale
             );
+            if (!zooming.current) {
+                context.clearRect(0, 0, canvasWidth, canvasHeight);
+            }
             context.translate(offsetDiff.x, offsetDiff.y);
             setViewportTopLeft((prevVal) => diffPoints(prevVal, offsetDiff));
             isResetRef.current = false;
@@ -143,7 +152,6 @@ const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpande
             const squareWidth = 370;
             const squareHeight = 550
             image.src = "https://medlineplus.gov/images/Anatomy_share.jpg"
-            context.clearRect(0, 0, canvasWidth, canvasHeight);
             image.onload = () => {
                 context.drawImage(image, canvasWidth / 2 - squareWidth / 2, canvasHeight / 2 - squareHeight / 2, squareWidth, squareHeight);
             };
@@ -157,34 +165,56 @@ const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpande
         viewportTopLeft
     ]);
 
+    useLayoutEffect(() => {
+        if (context) {
+            // Set the transformation matrix for scaling
+            const zoom = 1 + zoomIn / ZOOM_SENSITIVITY;
+            const viewportTopLeftDelta = {
+                x: ((flip1 ? left1 + (selectedLabel1 === 'Small intestine' ? 200 : 380) : left1) / scale) * (1 - 1 / zoom),
+                y: (top1 / scale) * (1 - 1 / zoom)
+            };
+            const newViewportTopLeft = addPoints(
+                viewportTopLeft,
+                viewportTopLeftDelta
+            );
+
+            context.translate(viewportTopLeft.x, viewportTopLeft.y);
+            context.scale(zoom, zoom);
+            context.translate(-newViewportTopLeft.x, -newViewportTopLeft.y);
+
+            setViewportTopLeft(newViewportTopLeft);
+            setScale(scale * zoom);
+        }
+    }, [
+        zoomIn,
+        top1,
+        left1,
+    ]);
+
+
     const handleSelectLabel = (selectedLabel: string, top: number, left: number, flip: boolean) => {
         if(selectedLabel === titleExpanded) {
             setTitleExpanded('')
+            setFlip1(true)
+            setTop1(1)
+            setLeft1(1)
+            setZoomIn(1)
+            setSelectedLabel1('')
+            zooming.current = false
             if (context) {
                 reset(context)
             }
         } else {
+            zooming.current = true
             setTitleExpanded(selectedLabel)
-            if (context) {
-                // for (let x = 0; x <= 280; x++){
-                const zoom = 1 + 280 / ZOOM_SENSITIVITY;
-                const viewportTopLeftDelta = {
-                    x: (flip ? left + 360 : left / scale) * (1 - 1 / zoom),
-                    y: (top / scale) * (1 - 1 / zoom)
-                };
-                const newViewportTopLeft = addPoints(
-                    viewportTopLeft,
-                    viewportTopLeftDelta
-                );
-
-                context.translate(viewportTopLeft.x, viewportTopLeft.y);
-                context.scale(zoom, zoom);
-                context.translate(-newViewportTopLeft.x, -newViewportTopLeft.y);
-
-                setViewportTopLeft(newViewportTopLeft);
-                setScale(scale * zoom);
-                isResetRef.current = false;
-                // }
+            setTop1(top)
+            setLeft1(left)
+            setFlip1(flip)
+            setSelectedLabel1(selectedLabel)
+            for (let x = 1; x <= 60; x=x+0.3){
+                setTimeout(() => {
+                    setZoomIn(x)
+                }, 10)
             }
         }
     }
@@ -200,7 +230,7 @@ const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpande
                         }}>
                             {!point.flip && <div
                                 className={`w-5 h-5 rounded-full text-white flex items-center justify-center border text-xs border-[#fff]`}>{key + 1}</div>}
-                            <button onClick={() => handleSelectLabel(point.title, point.top, point.left, point.flip)} className={'bg-[#fffffff2] border border-[#adadad] p-4 rounded-md hover:border-blue-600 text-start'}>
+                            <button onClick={() => handleSelectLabel(point.title, point.top + offset.y, point.left + offset.x, point.flip)} className={'bg-[#fffffff2] border border-[#adadad] p-4 rounded-md hover:border-blue-600 text-start'}>
                                 <p className={'text-sm'}>{point.title}</p>
                                 {point?.description && point?.description()}
                             </button>
@@ -215,7 +245,7 @@ const BodyCanvasComponent = ({canvasWidth, canvasHeight, canvasRef, titleExpande
                         }}>
                             {!point.flip && <div
                                 className={`w-5 h-5 rounded-full text-white flex items-center justify-center border text-xs ${titleExpanded === point.title ? 'border-blue-600' : 'border-[#fff]'}`}>{key + 1}</div>}
-                            <button onClick={() => handleSelectLabel(point.title, point.top, point.left, point.flip)} className={`bg-[#fffffff2] border ${titleExpanded === point.title ? 'border-blue-600' : 'border-[#adadad]'} p-4 rounded-md hover:border-blue-600 text-start`}>
+                            <button onClick={() => handleSelectLabel(point.title, point.top + offset.y, point.left + offset.x, point.flip)} className={`bg-[#fffffff2] border ${titleExpanded === point.title ? 'border-blue-600' : 'border-[#adadad]'} p-4 rounded-md hover:border-blue-600 text-start`}>
                                 <p className={'text-sm'}>{point.title}</p>
                                 {point?.description && point?.description()}
                                 {titleExpanded === point.title && point.organSwitch && point.organSwitch(() => setSwitchOrgans(false))}
